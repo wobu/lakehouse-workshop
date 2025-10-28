@@ -3,16 +3,17 @@
 https://iceberg.apache.org/spark-quickstart/
 
 ```bash
-docker-compose up
+git submodule init
+git submodule update
+docker compose up
 ```
+Use
+Jupyter: http://localhost:8888
+
+Or local spark sql terminal
 
 ```bash
 docker exec -it spark-iceberg spark-sql
-```
-
-```bash
-# jupyter notebook server: http://localhost:8888
-docker exec -it spark-iceberg notebook
 ```
 
 ```sql
