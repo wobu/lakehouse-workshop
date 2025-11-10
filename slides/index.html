@@ -144,8 +144,10 @@ Chrome oder Edge Browser
 
 `= Data Lake + Data Warehouse`
 
-- Zweck für Data Warehouses? (Stichwort `OLAP`)
-- Zweck für Data Lakes? (Stichwort `BigData`)
+<img src="Lakehouse/Workshops/attachments/1_A6PpTrehGLxCJWNcUsDTNg.webp" alt="" style="object-fit: scale-down">
+
+
+
 
 
 <style>
@@ -165,7 +167,20 @@ line-height: 1
 
 <div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
 
+<div class="block">
 
+</div>
+
+
+
+</div>
+<div class="footnotes" role="doc-endnotes">
+<ol>
+<li id="fn:1" role="doc-endnote" class="footnote"><p>
+
+https://davidregalado255.medium.com/wtf-is-a-data-lakehouse-ba14bf66f93b
+
+</p></li></ol>
 </div>
 </div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
 <div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1400px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
@@ -176,6 +191,7 @@ line-height: 1
 > Facebook in its initial years started with Oracle as backend database to store all the data. But as time passed, data collected by them per day started to grow exponentially. ... To manage this large amount of data, Facebook started using Hadoop. Initially ... in 2006, the data was coming at the rate of 10s of GBs/day. In 2007 volume increased to 1 TB/day and after few years this volume reached to ~15 TB/day ... they realized the need of some tool which could act as a bridge between HDFS and their SQL experts so that their people having SQL expertise could move to new system with minimal changes.
 
 \- Facebook - Warum Apache Hive entstanden ist<sup id="fnref:1" role="doc-noteref">1</sup>
+
 
 
 
@@ -212,7 +228,10 @@ https://www.linkedin.com/pulse/hive-story-history-architecture-dinesh-gangwar/
 
 </p></li></ol>
 </div>
-</div></script></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+</div>
+
+<aside class="notes"><p>Contras: Optimization (Partitioning is hard), no ACID, no SQL</p>
+</aside></script></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
 <div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1400px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
 
 ### Lakehouse - Entwicklung
@@ -273,6 +292,7 @@ Matei Zaharia, Ali Ghodsi 0002, Reynold Xin, and Michael Armbrust. 2021. Lakehou
 
 
 
+
 <style>
 .footnote{
   font-size:50%;
@@ -305,6 +325,131 @@ Dipankar Mazumdar, Jason Hughes, and JB Onofre. 2023. The Data Lakehouse: Data W
 
 </p></li></ol>
 </div>
+</div>
+
+<aside class="notes"><p>Separation of Storage &amp; Compute!</p>
+</aside></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1400px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#####  Lakehouse components
+
+<split even>
+
+<img src="Lakehouse/Workshops/attachments/Generic_Overview_Lakehouse.png" alt="" style="object-fit: scale-down">
+
+
+- **Compute Engine**: Apache Spark, Flink, Trino, DuckDB etc.
+
+- **File Format**: Apache Parquet
+
+- **Storage**: HDFS, S3 etc
+
+
+- **Storage Engine** + **Catalog** + **Table Format** = 
+  
+  <i class="fas fa-question fa-4x" ></i>
+
+
+
+</split>
+
+
+<style>
+.footnote{
+  font-size:50%;
+}
+.callout {
+font-size:70%;
+}
+.callout-title {
+padding: 0px 1em 0px 10px /* 10px 1em 10px 10px */
+}
+/*.callout-title-inner p {
+line-height: 1
+}*/
+</style>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+
+</div>
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1400px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#####  Lakehouse components
+
+<split even>
+
+<img src="Lakehouse/Workshops/attachments/Generic_Overview_Lakehouse.png" alt="" style="object-fit: scale-down">
+
+
+- **Storage Engine** + **Catalog** + **Table Format** = Open Table Formats, e.g. Apache Iceberg
+
+
+</split>
+
+
+
+<style>
+.footnote{
+  font-size:50%;
+}
+.callout {
+font-size:70%;
+}
+.callout-title {
+padding: 0px 1em 0px 10px /* 10px 1em 10px 10px */
+}
+/*.callout-title-inner p {
+line-height: 1
+}*/
+</style>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+
+</div>
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1400px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+##### Open Table Format - Apache Iceberg
+
+  <img src="Lakehouse/Workshops/attachments/Pasted image 20251110155148.png" alt="" style="width: 400px; object-fit: fill">
+
+<split even>
+
+<img src="Lakehouse/Workshops/attachments/iceberg-metadata.png" alt="" style="width: 600px; object-fit: fill">
+
+
+- ACID transactions
+- Time Travel
+- Hidden Partitioning
+- Schema Evolution
+
+
+</split>
+
+
+
+<style>
+.footnote{
+  font-size:50%;
+}
+.callout {
+font-size:70%;
+}
+.callout-title {
+padding: 0px 1em 0px 10px /* 10px 1em 10px 10px */
+}
+/*.callout-title-inner p {
+line-height: 1
+}*/
+</style>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+
+</div>
 </div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
 <div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1400px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
 
@@ -314,6 +459,7 @@ Dipankar Mazumdar, Jason Hughes, and JB Onofre. 2023. The Data Lakehouse: Data W
 
 
 <img src="Lakehouse/Workshops/attachments/Row_vs_Column_Example.png" alt="" style="object-fit: scale-down">
+
 
 
 
@@ -355,71 +501,12 @@ https://sympathetic.ink/2024/01/24/Chapter-1-The-birth-of-Parquet.html
 
 </p></li></ol>
 </div>
-</div></script></section></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+</div></script></section></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
 <div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1400px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
 
-### Lakehouse - Potential & Zusammenfassung
+## Apache Iceberg Demo
 
-
-> Es handelt sich um eine hybride Architektur, die die Stärken beider Welten vereint: die kostengünstige, flexible Speicherung großer Mengen an Rohdaten in verschiedenen Formaten (strukturiert, unstrukturiert, semi-strukturiert) aus Data Lakes und die strukturierten Datenverwaltungs-, Governance- und Leistungsmerkmale von Data Warehouses. Das Kernziel ist die Schaffung einer einzigen, vereinheitlichten Plattform für alle Datenanalyse-Workloads, von Business Intelligence (BI) und SQL-Analysen bis hin zu Data Science und Machine Learning (ML).<sup id="fnref:1" role="doc-noteref">1</sup>
-
-
-
-
-<style>
-.footnote{
-  font-size:50%;
-}
-.callout {
-font-size:70%;
-}
-.callout-title {
-padding: 0px 1em 0px 10px /* 10px 1em 10px 10px */
-}
-/*.callout-title-inner p {
-line-height: 1
-}*/
-</style>
-
-<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
-
-<div class="block">
-
-</div>
-
-
-
-</div>
-<div class="footnotes" role="doc-endnotes">
-<ol>
-<li id="fn:1" role="doc-endnote" class="footnote"><p>
-
-https://cloud.google.com/discover/what-is-a-data-lakehouse?hl=de
-
-</p></li></ol>
-</div>
-</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
-<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1400px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
-
-##### Potential
-
-<div style="text-align: left">
-
-<i class="fas fa-check" ></i>
-Technologieoffenheit und offener Datenzugriff  
-<i class="fas fa-check" ></i>
-Nutzung von kostengünstigen Speicher  
-<i class="fas fa-check" ></i>
-Beliebig Skalierbar  
-	=> Trennung von Storage & Compute  
-
-**Herausforderungen:**  
-<i class="fas fa-xmark" ></i>
-Initiale Datenanbindung bleibt komplex  
-<i class="fas fa-xmark" ></i>
-Neue Technologie: Noch keine fertigen Lösungen  
-
-</div>
+https://github.com/wobu/lakehouse-workshop
 
 
 
@@ -442,7 +529,31 @@ line-height: 1
 
 
 </div>
-</div></script></section></section></div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1400px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Q&A
+
+<style>
+.footnote{
+  font-size:50%;
+}
+.callout {
+font-size:70%;
+}
+.callout-title {
+padding: 0px 1em 0px 10px /* 10px 1em 10px 10px */
+}
+/*.callout-title-inner p {
+line-height: 1
+}*/
+</style>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+
+</div>
+</div></script></section></div>
     </div>
 
     <script src="dist/reveal.js"></script>
