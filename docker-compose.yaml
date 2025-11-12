@@ -1,13 +1,21 @@
 services:
+  spark-iceberg-image-build:
+    image: docker-spark-iceberg
+    build:
+      context: docker-spark-iceberg/spark
+    entrypoint: /bin/bash # workaround for just building the image, no service needed here
+    restart: "no"
+
   spark-iceberg:
     #image: tabulario/spark-iceberg
     image: devcamp-iceberg-quickstart
     build:
-      context: docker-spark-iceberg/spark
+      context: .
     container_name: spark-iceberg
     networks:
       iceberg_net:
     depends_on:
+      - spark-iceberg-image-build
       - rest
       - minio
     volumes:
@@ -26,8 +34,8 @@ services:
 
 
   rest:
-    image: &lakekeeper-image quay.io/lakekeeper/catalog:latest
-    pull_policy: &lakekeeper-pull-policy always
+    image: &lakekeeper-image quay.io/lakekeeper/catalog:v0.10.4
+    pull_policy: &lakekeeper-pull-policy missing
     environment: &lakekeeper-environment
       - LAKEKEEPER__PG_ENCRYPTION_KEY=This-is-NOT-Secure!
       - LAKEKEEPER__PG_DATABASE_URL_READ=postgresql://postgres:postgres@db:5432/postgres
@@ -53,6 +61,8 @@ services:
       - "8181:8181"
     networks:
       iceberg_net:
+        aliases:
+          - lakekeeper
 
   migrate:
     image: *lakekeeper-image
@@ -63,6 +73,56 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      iceberg_net:
+
+  bootstrap:
+    image: curlimages/curl
+    depends_on:
+      rest:
+        condition: service_healthy
+    restart: "no"
+    command:
+      - -w
+      - "%{http_code}"
+      - "-X"
+      - "POST"
+      - "-v"
+      - "http://lakekeeper:8181/management/v1/bootstrap"
+      - "-H"
+      - "Content-Type: application/json"
+      - "--data"
+      - '{"accept-terms-of-use": true}'
+      - "-o"
+      - "/dev/null"
+      # - "--fail-with-body"
+    networks:
+      iceberg_net:
+
+  initialwarehouse:
+    image: curlimages/curl
+    depends_on:
+      rest:
+        condition: service_healthy
+      bootstrap:
+        condition: service_completed_successfully
+    restart: "no"
+    command:
+      - -w
+      - "%{http_code}"
+      - "-X"
+      - "POST"
+      - "-v"
+      - "http://lakekeeper:8181/management/v1/warehouse"
+      - "-H"
+      - "Content-Type: application/json"
+      - "--data"
+      - "@create-default-warehouse.json"
+      - "-o"
+      - "/dev/null"
+      # - "--fail-with-body"
+    volumes:
+      - ./create-default-warehouse.json:/home/curl_user/create-default-warehouse.json
     networks:
       iceberg_net:
 
@@ -77,10 +137,11 @@ services:
       timeout: 10s
       retries: 2
       start_period: 10s
-    volumes:
-      - volume-lakekeeper:/var/lib/postgresql/data
+#    volumes:
+#      - volume-lakekeeper:/var/lib/postgresql/data
     networks:
       iceberg_net:
+
   minio:
     image: minio/minio
     container_name: minio
@@ -96,11 +157,13 @@ services:
       - 9001:9001
       - 9000:9000
     command: ["server", "/data", "--console-address", ":9001"]
+
   mc:
     depends_on:
       - minio
     image: minio/mc
     container_name: mc
+    restart: "no"
     networks:
       iceberg_net:
     environment:
@@ -118,5 +181,5 @@ services:
 networks:
   iceberg_net:
 
-volumes:
-  volume-lakekeeper:
+#volumes:
+#  volume-lakekeeper:
