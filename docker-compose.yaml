@@ -18,12 +18,19 @@ services:
       - spark-iceberg-image-build
       - rest
       - minio
+    deploy:
+      resources:
+        limits:
+          memory: 4gb
+        reservations:
+          memory: 2gb
     volumes:
       - ./notebooks:/home/iceberg/notebooks/devcamp
     environment:
       - AWS_ACCESS_KEY_ID=admin
       - AWS_SECRET_ACCESS_KEY=password
       - AWS_REGION=us-east-1
+      - SPARK_DRIVER_MEMORY=4g
     ports:
       - 8888:8888
       - 8080:8080
