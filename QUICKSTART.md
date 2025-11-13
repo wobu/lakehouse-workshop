@@ -1,31 +1,56 @@
-# Apache Iceberg Quickstart
+# Demo Quickstart
 
-https://iceberg.apache.org/spark-quickstart/
+Based on: https://iceberg.apache.org/spark-quickstart/
 
 ```bash
 git submodule init
 git submodule update
 docker compose up
 ```
-Use
-Jupyter: http://localhost:8888
 
-Or local spark sql terminal
+## Services
+- [Catalog](http://localhost:8181/)
+- [Storage](http://localhost:9001/)
+- [Jupyter](http://localhost:8888/)
+
+
+## Demo
+
+Use either:
+- Jupyter: http://localhost:8888/notebooks/devcamp/demo.ipynb
+- Or via local spark sql terminal
 
 ```bash
 docker exec -it spark-iceberg spark-sql
 ```
 
 ```sql
-CREATE TABLE demo.nyc.taxis
-(
-  vendor_id bigint,
-  trip_id bigint,
-  trip_distance float,
-  fare_amount double,
-  store_and_fwd_flag string
+CREATE SCHEMA IF NOT EXISTS demo.nyc;
+```
+
+```sql
+CREATE TABLE demo.nyc.taxis (
+    VendorID              bigint,
+    tpep_pickup_datetime  timestamp,
+    tpep_dropoff_datetime timestamp,
+    passenger_count       double,
+    trip_distance         double,
+    RatecodeID            double,
+    store_and_fwd_flag    string,
+    PULocationID          bigint,
+    DOLocationID          bigint,
+    payment_type          bigint,
+    fare_amount           double,
+    extra                 double,
+    mta_tax               double,
+    tip_amount            double,
+    tolls_amount          double,
+    improvement_surcharge double,
+    total_amount          double,
+    congestion_surcharge  double,
+    airport_fee           double
 )
-PARTITIONED BY (vendor_id);
+TBLPROPERTIES ('format-version'=3, 'write.parquet.compression-codec'='zstd');
 ```
 
 ```sql
@@ -33,14 +58,15 @@ SELECT * FROM demo.nyc.taxis;
 ```
 
 ```sql
-INSERT INTO demo.nyc.taxis
-VALUES (1, 1000371, 1.8, 15.32, 'N'), (2, 1000372, 2.5, 22.15, 'N'), (2, 1000373, 0.9, 9.01, 'N'), (1, 1000374, 8.4, 42.13, 'Y');
+CREATE TEMPORARY VIEW nyc_taxis_yello_tripdata
+USING org.apache.spark.sql.parquet
+OPTIONS (
+  path "/home/iceberg/data/yellow_tripdata_2022-01.parquet"
+);
+
+INSERT INTO demo.nyc.taxis SELECT * FROM nyc_taxis_yello_tripdata;
 ```
 
 ```sql
-SELECT * FROM demo.nyc.taxis WHERE vendor_id = 2;
-```
-
-```sql
-EXPLAIN SELECT * FROM demo.nyc.taxis WHERE vendor_id = 2;
+SELECT Count(*) FROM demo.nyc.taxis;
 ```
