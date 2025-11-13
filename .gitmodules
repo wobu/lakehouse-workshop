@@ -1,3 +1,4 @@
 [submodule "docker-spark-iceberg"]
 	path = docker-spark-iceberg
 	url = https://github.com/databricks/docker-spark-iceberg.git
+	ignore = dirty
