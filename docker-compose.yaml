@@ -15,7 +15,7 @@ services:
       iceberg_net:
     depends_on:
       - spark-iceberg-image-build
-      - rest
+      - catalog
       - minio
     deploy:
       resources:
@@ -40,9 +40,10 @@ services:
       - 10001:10001
 
 
-  rest:
+  catalog:
     image: &lakekeeper-image quay.io/lakekeeper/catalog:v0.10.4
     pull_policy: &lakekeeper-pull-policy missing
+    container_name: catalog
     environment: &lakekeeper-environment
       - LAKEKEEPER__PG_ENCRYPTION_KEY=This-is-NOT-Secure!
       - LAKEKEEPER__PG_DATABASE_URL_READ=postgresql://postgres:postgres@db:5432/postgres
@@ -62,7 +63,7 @@ services:
       retries: 3
       start_period: 3s
     depends_on:
-      migrate:
+      catalog-migrate:
         condition: service_completed_successfully
     ports:
       - "8181:8181"
@@ -70,23 +71,24 @@ services:
       iceberg_net:
         aliases:
           - lakekeeper
+          - rest
 
-  migrate:
+  catalog-migrate:
     image: *lakekeeper-image
     pull_policy: *lakekeeper-pull-policy
     environment: *lakekeeper-environment
     restart: "no"
     command: [ "migrate" ]
     depends_on:
-      db:
+      catalog-database:
         condition: service_healthy
     networks:
       iceberg_net:
 
-  bootstrap:
+  catalog-bootstrap:
     image: curlimages/curl
     depends_on:
-      rest:
+      catalog:
         condition: service_healthy
     restart: "no"
     command:
@@ -106,12 +108,12 @@ services:
     networks:
       iceberg_net:
 
-  initialwarehouse:
+  catalog-initialwarehouse:
     image: curlimages/curl
     depends_on:
-      rest:
+      catalog:
         condition: service_healthy
-      bootstrap:
+      catalog-bootstrap:
         condition: service_completed_successfully
     restart: "no"
     command:
@@ -133,8 +135,9 @@ services:
     networks:
       iceberg_net:
 
-  db:
+  catalog-database:
     image: postgres:17
+    container_name: catalog-database
     environment:
       - POSTGRES_PASSWORD=postgres
       - PGDATA=/var/lib/postgresql/data/pgdata
@@ -146,6 +149,8 @@ services:
       start_period: 10s
     networks:
       iceberg_net:
+        aliases:
+          - db
 
   minio:
     image: minio/minio
@@ -181,7 +186,6 @@ services:
       /usr/bin/mc rm -r --force minio/warehouse;
       /usr/bin/mc mb minio/warehouse;
       /usr/bin/mc policy set public minio/warehouse;
-      tail -f /dev/null
       "      
 networks:
   iceberg_net:
